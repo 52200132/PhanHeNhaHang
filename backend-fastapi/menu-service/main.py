@@ -1,6 +1,6 @@
 from fastapi import FastAPI
-from service1.api.v1.endpoints import user_routes
-from service1.database import engine, Base
+from api.v1.endpoints import user_routes
+from db import engine, Base
 
 app = FastAPI()
 
