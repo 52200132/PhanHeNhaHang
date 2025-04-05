@@ -1,0 +1,30 @@
+sqlalchemy-mysql-project/
+sqlalchemy-sqlserver-project/
+
+# Ignore Python stuff (FastAPI backend)
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.db
+*.sqlite3
+*.log
+.env
+.venv/
+venv/
+instance/
+*.egg-info/
+dist/
+build/
+
+# Ignore React stuff (frontend)
+frontend-react/node_modules/
+frontend-react/build/
+frontend-react/.env
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# VS Code
+.vscode/
