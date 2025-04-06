@@ -47,7 +47,7 @@ class Ingredient(Base):
 
 
 class Recipe(Base):
-    __tablename__ = "Menu_Ingredient"
+    __tablename__ = "Recipe"
 
     recipe_id = Column(Integer, primary_key=True, autoincrement=True, index=True)
     dish_id = Column(Integer, ForeignKey("Dish.dish_id"))
