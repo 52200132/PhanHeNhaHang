@@ -14,7 +14,7 @@ class Table(Base):
     orders = relationship("Order", back_populates="table") # checked
 
     __table_args__ = (
-        CheckConstraint("capacity >= 2", name="check_capacity_greater_than_2")
+        CheckConstraint("capacity >= 2", name="check_capacity_greater_than_2"),
     )
 
 class Order(Base):
@@ -32,7 +32,7 @@ class Order(Base):
 
     table = relationship("Table", back_populates="orders") # checked
     # user = relationship("User", back_populates="orders")
-    pa
+    payment = relationship("Payment", back_populates="order") # checked
     order_details = relationship("OrderDetail", back_populates="order") # checked
 
 class OrderDetail(Base):
@@ -52,7 +52,7 @@ class OrderDetail(Base):
 
     __table_args__ = (
         CheckConstraint("quantity >= 0", name="check_quantity_positive"),
-        CheckConstraint("total_price >= 0", name="check_total_price_positive")
+        CheckConstraint("total_price >= 0", name="check_total_price_positive"),
     )
 
 class Shift(Base):

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, Unicode, Enum, ForeignKey, Boolean, DateTime, Text, CheckConstraint
+from sqlalchemy import Column, Integer, Unicode, ForeignKey, Boolean, CheckConstraint
 from sqlalchemy.orm import relationship
 from db import Base  
 
@@ -19,7 +19,7 @@ class Dish(Base):
     recipes  = relationship("Recipe", back_populates="dish") # checked
 
     __table_args__ = (
-        CheckConstraint("price >= 0", name="check_price_positive")
+        CheckConstraint("price >= 0", name="check_price_positive"),  # Thêm dấu phẩy ở đây
     )
 
 
@@ -42,7 +42,7 @@ class Ingredient(Base):
     recipes = relationship("Recipe", back_populates="ingredient") # checked
 
     __table_args__ = (
-        CheckConstraint("quantity >= 0", name="check_quantity_positive")
+        CheckConstraint("quantity >= 0", name="check_quantity_positive"),
     )
 
 
