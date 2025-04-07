@@ -4,6 +4,7 @@ run_fastapi.bat
 test.bat
 
 # Ignore Python stuff (FastAPI backend)
+**__pycache__/
 __pycache__/
 *.pyc
 *.pyo
