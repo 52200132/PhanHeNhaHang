@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from db import engine, Base
 from models import Dish, Category, Ingredient
-# from api.v1.endpoints import dish_routes, category_routes, ingredient_routes
+from api.v1.endpoints import dish_routes, category_routes, ingredient_routes, recipe_routes
 
 app = FastAPI(title="Menu Service API")
 
@@ -26,7 +26,7 @@ async def startup():
 
 # Include routers
 # app.include_router(dish_routes.router, prefix="/api/v1", tags=["dishes"])
-# app.include_router(category_routes.router, prefix="/api/v1", tags=["categories"])
+app.include_router(category_routes.router, prefix="/api/v1", tags=["categories"])
 # app.include_router(ingredient_routes.router, prefix="/api/v1", tags=["ingredients"])
 
 @app.get("/")

@@ -12,7 +12,7 @@ class Dish(Base):
     unit_price = Column(Unicode(50), nullable=False, default="VNĐ") # đơn vị tiền tệ
     img_path = Column(Unicode(255), nullable=True)
     description = Column(Unicode(255), nullable=True)
-    is_available = Column(Boolean, default=False)
+    is_available = Column(Boolean, default=True)
 
     category = relationship("Category", back_populates="dishes") # checked
     # order_details = relationship("OrderDetail", back_populates="Dish")
@@ -52,7 +52,6 @@ class Recipe(Base):
     recipe_id = Column(Integer, primary_key=True, autoincrement=True, index=True)
     dish_id = Column(Integer, ForeignKey("Dish.dish_id"))
     ingredient_id = Column(Integer, ForeignKey("Ingredient.ingredient_id"))
-    is_main = Column(Boolean, default=False)
     unit = Column(Unicode(50), nullable=False)
     base_amount = Column(Integer, nullable=False)
 
