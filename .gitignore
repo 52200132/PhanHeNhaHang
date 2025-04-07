@@ -1,5 +1,6 @@
 sqlalchemy-mysql-project/
 sqlalchemy-sqlserver-project/
+run_fastapi.bat
 
 # Ignore Python stuff (FastAPI backend)
 __pycache__/
