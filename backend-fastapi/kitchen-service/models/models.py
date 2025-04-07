@@ -13,5 +13,5 @@ class KitchenOrder(Base):
     status = Column(Enum("Chưa chuẩn bị", "Đang chế biến", "Hoàn thành"), nullable=False, default="Chưa chuẩn bị")
 
     __table_args__ = (
-        CheckConstraint("quantity > 0", name="check_quantity_positive")
+        CheckConstraint("quantity > 0", name="check_quantity_positive"),
     )
