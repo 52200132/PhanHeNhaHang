@@ -37,3 +37,16 @@ class DishResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+class DishResponse(BaseModel):
+    dish_id: int
+    name: str
+    price: Annotated[int, Field(gt=0)]
+    unit_price: str
+    img_path: Optional[str] = None
+    description: Optional[str] = None
+    is_available: bool
+    category_id: int
+
+    class Config:
+        from_attributes = True

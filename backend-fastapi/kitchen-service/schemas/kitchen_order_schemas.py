@@ -27,6 +27,7 @@ class KitchenOrderUpdate(BaseModel):
         from_attributes = True
 
 class KitchenOrderResponse(BaseModel):
+    kitchen_order_id: int
     order_id: int
     dish_id: int
     status: OrderStatus
