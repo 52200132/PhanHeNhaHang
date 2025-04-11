@@ -22,7 +22,10 @@ def get_all_recipes(db: Session):
     db_recipes = db.query(Recipe).all()
     if not db_recipes:
         raise HTTPException(status_code=404, detail="No recipes found")
-    return [RecipeResponse.from_orm(recipe) for recipe in db_recipes]
+    return {
+        "message": "Recipes retrieved successfully",
+        "data": [RecipeResponse.from_orm(recipe) for recipe in db_recipes]
+    }
 # Lấy công thức (món ăn) theo ID
 def get_recipe(db: Session, recipe_id: int):
     db_recipe = db.query(Recipe).filter(Recipe.recipe_id == recipe_id).first()
@@ -35,7 +38,10 @@ def get_recipe_by_ingredient(db: Session, ingredient_id: int):
     db_recipe = db.query(Recipe).filter(Recipe.ingredient_id == ingredient_id).all()
     if not db_recipe:
         raise HTTPException(status_code=404, detail=f"No recipes found for ingredient ID {ingredient_id}")
-    return [RecipeResponse.from_orm(recipe) for recipe in db_recipe]
+    return {
+        "message": "Recipes retrieved successfully",
+        "data": [RecipeResponse.from_orm(recipe) for recipe in db_recipe]
+    }
 
 # U
 # Cập nhật thông tin công thức trong menu

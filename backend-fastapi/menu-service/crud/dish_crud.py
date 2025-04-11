@@ -30,15 +30,20 @@ def get_all_dish(db: Session):
     db_dish = db.query(Dish).all()
     if not db_dish:
         raise HTTPException(status_code=404, detail="No dishes found")
-    return [DishResponse.from_orm(dish) for dish in db_dish]
+    return {
+        "message": "Dishes retrieved successfully",
+        "data": [DishResponse.from_orm(dish) for dish in db_dish]
+    }
 
 #get all dishes by category
 def get_all_dish_by_category(db: Session, category_id: int):
     db_dish = db.query(Dish).filter(Dish.category_id == category_id).all()
     if not db_dish:
         raise HTTPException(status_code=404, detail=f"No dishes found for category ID {category_id}")
-    return [DishResponse.from_orm(dish) for dish in db_dish]
-
+    return {
+        "message": "Dishes retrieved successfully",
+        "data": [DishResponse.from_orm(dish) for dish in db_dish]
+    }
 
 #U
 def update_dish(db: Session, dish_id: int, dish: DishUpdate):

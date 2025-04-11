@@ -21,7 +21,11 @@ def get_all_ingredients(db: Session):
     db_ingredients = db.query(Ingredient).all()
     if not db_ingredients:
         raise HTTPException(status_code=404, detail="No ingredients found")
-    return [IngredientResponse.from_orm(ingredient) for ingredient in db_ingredients]
+    return {
+        "message": "Ingredients retrieved successfully",
+        "data": [IngredientResponse.from_orm(ingredient) for ingredient in db_ingredients]
+    }
+
 # Lấy thông tin từng nguyên liệu trong menu
 def get_ingredient(db: Session, ingredient_id: int):
     db_ingredient = db.query(Ingredient).filter(Ingredient.ingredient_id == ingredient_id).first()

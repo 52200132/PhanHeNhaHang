@@ -23,14 +23,20 @@ def get_all_kitchen_orders(db: Session):
     db_kitchen_orders = db.query(KitchenOrder).all()
     if not db_kitchen_orders:
         raise HTTPException(status_code=404, detail="No kitchen orders found")
-    return [KitchenOrderResponse.from_orm(order) for order in db_kitchen_orders]
+    return {
+        "message": "Kitchen orders retrieved successfully",
+        "data": [KitchenOrderResponse.from_orm(order) for order in db_kitchen_orders]
+    }
 
 # Lấy tất cả đơn hàng trong bếp theo trạng thái
 def get_kitchen_orders_by_status(db: Session, status: str):
     db_kitchen_orders = db.query(KitchenOrder).filter(KitchenOrder.status == status).all()
     if not db_kitchen_orders:
         raise HTTPException(status_code=404, detail=f"No kitchen orders found with status {status}")
-    return [KitchenOrderResponse.from_orm(order) for order in db_kitchen_orders]
+    return {
+        "message": "Kitchen orders retrieved successfully",
+        "data": [KitchenOrderResponse.from_orm(order) for order in db_kitchen_orders]
+    }
 
 # Lấy từng đơn hàng trong bếp
 def get_kitchen_order(db: Session, kitchen_order_id: int):

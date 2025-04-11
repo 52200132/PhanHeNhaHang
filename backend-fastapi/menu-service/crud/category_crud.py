@@ -20,7 +20,10 @@ def get_all_categories(db: Session):
     db_categories = db.query(Category).all()
     if not db_categories:
         raise HTTPException(status_code=404, detail="No categories found")
-    return [CategoryResponse.from_orm(category) for category in db_categories]
+    return {
+        "message": "Categories retrieved successfully",
+        "data": [CategoryResponse.from_orm(category) for category in db_categories]
+    }
 # Lấy thông tin loại món ăn trong menu
 def get_category(db: Session, category_id: int):
     db_category = db.query(Category).filter(Category.category_id == category_id).first()
