@@ -36,7 +36,7 @@ class Order(Base):
     order_details = relationship("OrderDetail", back_populates="order") # checked
     
     __table_args__ = (
-        CheckConstraint("price >= 0", name="check_price_positive"),  # Thêm dấu phẩy ở đây
+        CheckConstraint("total_price >= 0", name="check_price_positive"),  # Thêm dấu phẩy ở đây
     )
 
 class OrderDetail(Base):

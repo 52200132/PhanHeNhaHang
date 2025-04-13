@@ -72,10 +72,10 @@ def get_order_by_id(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
         )
 
-@router.post("/orders/add_orderdetail/{order_id}")
-def add_orderdetai_to_order(
+@router.post("/orders/add-orderdetails/{order_id}")
+def add_orderdetais_to_order(
     order_id: int,
-    order_detail: list[OrderDetail],
+    order_details: list[OrderDetail],
     db: Session = Depends(get_db),
 ):
     """
@@ -98,8 +98,8 @@ def add_orderdetai_to_order(
     """
     try:
         # Thêm món ăn vào đơn hàng
-        order_detail = OrderDetailCreate(**order_detail.dict())
-        add_dish = order_crud.add_order_detail(db, order_id, order_detail)
+        order_details = [OrderDetailCreate(**item.dict()) for item in order_details]
+        add_dish = order_crud.add_order_details(db, order_id, order_details)
         return {
             "message": "Dish added to order successfully",
             "success": True,

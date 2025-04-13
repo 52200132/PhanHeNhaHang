@@ -24,13 +24,13 @@ class OrderDetailCreate(BaseModel):
     """
     order_id: Optional[int] = None
     dish_id: int
-    quantity: int = 1
+    quantity: int
     total_price: Optional[int] = None
     note: Optional[str] = ""
 
 class OrderDetail(BaseModel):
     dish_id: int
-    quantity: int = 1
+    quantity: int
     note: Optional[str] = ""
 
 

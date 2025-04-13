@@ -92,9 +92,9 @@ def get_order_by_id(db: Session, order_id: int):
         logger.error(f"Error retrieving order: {str(e)}")
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
-def add_order_detail(db: Session, order_id: int, order_detail: OrderDetailCreate):
+def add_order_details(db: Session, order_id: int, order_details: list[OrderDetailCreate]):
     """
-    Thêm món ăn vào đơn hàng
+        Thêm món ăn vào đơn hàng
     """
     try:
         # Kiểm tra xem đơn hàng có tồn tại không
@@ -104,8 +104,9 @@ def add_order_detail(db: Session, order_id: int, order_detail: OrderDetailCreate
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Order not found")
         
         # Thêm món ăn vào đơn hàng
-        order_detail.order_id = order.order_id
-        order_items = orderdetail_crud.create_list_order_detail(db, [order_detail])
+        for item in order_details:
+            item.order_id = order_id
+        order_items = orderdetail_crud.create_list_order_detail(db, order_details)
         
         # Cập nhật tổng giá cho đơn hàng
         order_details = db.query(OrderDetail).filter(OrderDetail.order_id == order_id).all()
