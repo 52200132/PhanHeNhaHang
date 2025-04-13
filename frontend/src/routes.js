@@ -5,6 +5,7 @@ import OrderPage from './pages/OrderSystem/OrderPage';
 import KitchenPage from './pages/KitchenDisplay/KitchenPage';
 import GuestMenu from './pages/Menu/GuestMenu';
 import HomePage from './pages/Home/HomePage';
+import StaffPage from './pages/Staff/StaffPage';
 
 const router = createBrowserRouter([
   {
@@ -30,6 +31,10 @@ const router = createBrowserRouter([
       {
         path: '/guest-menu',
         element: <GuestMenu />
+      },
+      {
+        path: '/staff',
+        element: <StaffPage />
       }
     ]
   }

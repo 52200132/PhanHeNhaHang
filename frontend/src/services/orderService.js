@@ -6,17 +6,36 @@ export const tableService = {
     getAllTables: async () => {
         try {
             const response = await axios.get(`${API_URL}/tables`);
-            return response.data;
+            const tables = response.data['data'];
+            // console.log('Tables:', tables);
+            return tables
         } catch (error) {
-            console.error('Error fetching tables:', error);
+            console.error('Lỗi khi lấy danh sách bàn:', error);
             throw error;
         }
     },
     
+    getTableByEncodedId: async function(encodedId) {
+        try {
+            // Decode the base64 encoded ID
+            const decodedId = atob(encodedId);
+            console.log("Decoded table ID:", decodedId);
+            
+            // Get the table details using the decoded ID
+            return await this.getTableById(decodedId);
+        } catch (error) {
+            console.error("Error decoding or fetching table by encoded ID:", error);
+            return null;
+        }
+    },
+
     getTableById: async (tableId) => {
         try {
+            // Giải mã ID bàn từ URL
             const response = await axios.get(`${API_URL}/tables/${tableId}`);
-            return response.data;
+            const table = response.data['data'];
+            // console.log('Tables:', table);
+            return table
         } catch (error) {
             console.error(`Error fetching table with ID ${tableId}:`, error);
             throw error;
@@ -33,9 +52,9 @@ export const tableService = {
         }
     },
     
-    updateTable: async (tableId, tableData) => {
+    updateStatusTable: async (tableId, status) => {
         try {
-            const response = await axios.put(`${API_URL}/tables/${tableId}`, tableData);
+            const response = await axios.patch(`${API_URL}/tables/${tableId}/update-status?status=${status}`);
             return response.data;
         } catch (error) {
             console.error(`Error updating table with ID ${tableId}:`, error);

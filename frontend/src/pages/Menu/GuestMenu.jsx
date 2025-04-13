@@ -1,10 +1,11 @@
 import React from 'react';
 import { menuService } from '../../services/menuService';
-import { orderService } from '../../services/orderService';
+import { orderService, tableService } from '../../services/orderService';
 import { useState, useEffect } from 'react';
 import './GuestMenu.css';
 import SearchBar from '../../components/common/SearchBar';
 import MenuCard from '../../components/common/MenuCard/MenuCard';
+import { useLocation } from 'react-router-dom';
 
 const GuestMenu = () => {
     const [dishes, setDishes] = useState([]);
@@ -14,17 +15,27 @@ const GuestMenu = () => {
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [orderedItems, setOrderedItems] = useState([]);
     const [notes, setNotes] = useState({});
+    const [table, setTable] = useState(null);
+
+    // Get the table ID from the URL query parameter
+    const useQuery = () => new URLSearchParams(useLocation().search);
+    const query = useQuery();
+    const encodedTableId = query.get('id');
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 setLoading(true);
-                const [categoriesData, dishesData] = await Promise.all([
+                const [categoriesData, dishesData, tableData] = await Promise.all([
                     menuService.getCategories(),
-                    menuService.getAllDishes()
+                    menuService.getAllDishes(),
+                    encodedTableId ? tableService.getTableByEncodedId(encodedTableId) : null,
                 ]);
+
                 setCategories(categoriesData || []);
                 setDishes(dishesData || []);
+                setTable(tableData);
+
             } catch (err) {
                 setError('Failed to load menu data');
                 console.error(err);
@@ -34,7 +45,7 @@ const GuestMenu = () => {
         };
 
         fetchData();
-    }, []);
+    }, [encodedTableId]);
 
     const handleOrder = (item) => {
         const { dishId, itemName, quantity, price } = item;
@@ -79,6 +90,11 @@ const GuestMenu = () => {
     };
 
     const submitOrder = () => {
+        if (!table) {
+            alert('Vui lòng chọn bàn trước khi đặt món!');
+            return;
+        }
+
         // Prepare order data with items and their notes
         const orderData = orderedItems.map(item => ({
             dish_id: item.dishId,
@@ -88,7 +104,7 @@ const GuestMenu = () => {
 
         // TODO: Submit the order to the backend
         const order = {
-            table_id: 1, // Example table ID, replace with actual table ID
+            table_id: table.table_id,
             items: orderData,
         }
 
@@ -135,7 +151,7 @@ const GuestMenu = () => {
 
             <div className="guest-menu__top-bar">
                 <div className="guest-menu__table-number">
-                    Bàn 1
+                    {table ? `${table.name}` : 'Bàn không xác định'}
                 </div>
                 <div className="search-bar-container">
                     <SearchBar placeholder="Tìm kiếm món ăn..."
