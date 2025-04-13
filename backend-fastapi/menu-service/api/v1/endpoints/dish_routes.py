@@ -1,25 +1,25 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from db.sesstion import get_db
+from db.session import get_db
 from schemas.dish_schemas import DishCreate, DishUpdate, DishResponse
 from crud.dish_crud import add_dish, get_dish, update_dish, delete_dish, get_all_dish, get_all_dish_by_category
 
 router = APIRouter()
 
 # Thêm món ăn vào menu
-@router.post("/dishes/", response_model=DishResponse)
+@router.post("/dishes/")
 def create_new_dish(dish: DishCreate, db: Session = Depends(get_db)):
     new_dish = add_dish(db=db, dish=dish)
     return new_dish
 
 # Lấy tất cả món ăn trong menu
-@router.get("/dishes/", response_model=list[DishResponse])
+@router.get("/dishes/")
 def read_all_dishes(db: Session = Depends(get_db)):
     dishes = get_all_dish(db=db)
     return dishes
 
 # Lấy tất cả món ăn có liên quan đến loại món ăn
-@router.get("/dishes/categories/{category_id}", response_model=list[DishResponse])
+@router.get("/dishes/categories/{category_id}")
 def read_all_dishes_by_category(category_id: int, db: Session = Depends(get_db)):
     dishes = get_all_dish_by_category(db=db, category_id=category_id)
     return dishes

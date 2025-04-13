@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from db.sesstion import get_db
+from db.session import get_db
 from schemas.recipe_schemas import RecipeCreate, RecipeUpdate, RecipeResponse
 from crud.recipe_crud import add_recipe, get_recipe, update_recipe, delete_recipe, get_all_recipes, get_recipe_by_ingredient
 

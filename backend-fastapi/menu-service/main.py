@@ -2,9 +2,10 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
-# from db import engine, Base
-# from models import Dish, Category, Ingredient
 from api.v1.endpoints import dish_routes, category_routes, ingredient_routes, recipe_routes
+from utils.logger import default_logger
+
+logger = default_logger
 
 app = FastAPI(title="Menu Service API")
 
@@ -16,15 +17,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# Create tables on startup
-# @app.on_event("startup")
-# async def startup():
-#     try:
-#         Base.metadata.create_all(bind=engine)
-#         print("Database menu service connected and tables created.")
-#     except Exception as e:
-#         print(f"Database Error: {e}")
 
 # Include routers
 app.include_router(dish_routes.router, prefix="/api/v1", tags=["dishes"])
@@ -42,6 +34,7 @@ def validation_exception_handler(request: Request, exc: RequestValidationError):
             "type": error["type"],
         }
         result.append(error_dict)
+    logger.error(f"Validation error: {result}")
     return JSONResponse(
         status_code=400,
         content=({"detail": result})
@@ -49,4 +42,9 @@ def validation_exception_handler(request: Request, exc: RequestValidationError):
 
 @app.get("/")
 def read_root():
+    logger.info("Root endpoint accessed")
     return {"message": "Welcome to Menu Service API"}
+
+@app.on_event("startup")
+async def startup_event():
+    logger.info("Menu Service starting up")
