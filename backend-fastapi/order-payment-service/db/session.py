@@ -5,8 +5,6 @@ from dotenv import load_dotenv
 from db.base import Base
 from utils.logger import get_logger
 
-logger = get_logger(__name__)
-
 load_dotenv()
 
 MAGENTA = "\033[35m"
@@ -40,5 +38,4 @@ try:
     print(f"{MAGENTA}Database order-payment service connected and tables created.{RESET}")
     print(f"{MAGENTA}Connection established successfully.{RESET}")
 except Exception as e:
-    logger.error(f"Database connection error: {e}")
     print(f"{MAGENTA}Database Error: {e}{RESET}")

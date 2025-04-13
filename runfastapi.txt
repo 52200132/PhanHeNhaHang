@@ -1,0 +1,8 @@
+# Menu service
+uvicorn main:app --port 8001 --reload
+
+# Order service
+uvicorn main:app --port 8002 --reload
+
+# Kitchen service
+uvicorn main:app --port 8003 --reload
