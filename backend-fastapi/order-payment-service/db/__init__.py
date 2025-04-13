@@ -1,5 +1,5 @@
 from db.base import Base
-from db.sesstion import get_db, engine
+from db.session import get_db, engine
 
 
 # Export Base và SessionLocal
