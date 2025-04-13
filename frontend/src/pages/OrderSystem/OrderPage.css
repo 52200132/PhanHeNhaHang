@@ -1,0 +1,106 @@
+.order-page {
+  padding: 20px;
+}
+
+.order-page__header {
+  margin-bottom: 20px;
+}
+
+.order-page__content {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  gap: 20px;
+}
+
+.tables-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.table-card {
+  padding: 15px;
+  border-radius: 8px;
+  background-color: #e8f5e9;
+  cursor: pointer;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.table-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.table-card--selected {
+  background-color: #4caf50;
+  color: white;
+}
+
+.table-card--unavailable {
+  background-color: #f1f1f1;
+  color: #999;
+  cursor: not-allowed;
+}
+
+.table-card__name {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.dishes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 15px;
+  margin-top: 10px;
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.order-items {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.order-item {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  grid-gap: 10px;
+  align-items: center;
+}
+
+.order-item__actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.order-item__actions button {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  border: none;
+  background-color: #f1f1f1;
+  cursor: pointer;
+}
+
+.order-total {
+  margin: 20px 0;
+  font-size: 1.2rem;
+  text-align: right;
+}
+
+.loading, .error {
+  padding: 20px;
+  text-align: center;
+  font-size: 1.2rem;
+}
+
+.error {
+  color: #f44336;
+}

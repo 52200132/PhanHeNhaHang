@@ -30,10 +30,7 @@ def get_all_categories(db: Session):
             logger.info("No categories found in database")
             raise HTTPException(status_code=404, detail="No categories found")
         logger.info(f"Retrieved {len(db_categories)} categories")
-        return {
-            "message": "Categories retrieved successfully",
-            "data": [CategoryResponse.from_orm(category) for category in db_categories]
-        }
+        return [CategoryResponse.from_orm(category) for category in db_categories]
     except HTTPException:
         raise
     except Exception as e:

@@ -1,0 +1,84 @@
+.kitchen-page {
+    padding: 20px;
+}
+
+.kitchen-page__header {
+    margin-bottom: 20px;
+}
+
+.kitchen-page__tabs {
+    display: flex;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #ddd;
+}
+
+.kitchen-page__tabs button {
+    padding: 10px 20px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    position: relative;
+}
+
+.kitchen-page__tabs button.active {
+    font-weight: bold;
+    color: #4CAF50;
+}
+
+.kitchen-page__tabs button.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background-color: #4CAF50;
+}
+
+.kitchen-page__orders {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.order-card {
+    transition: all 0.3s ease;
+}
+
+.order-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.order-card__details {
+    margin-bottom: 15px;
+}
+
+.order-card__details>div {
+    margin-bottom: 5px;
+}
+
+.order-card__actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.no-orders {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 40px;
+    color: #666;
+    font-size: 1.2rem;
+}
+
+.loading,
+.error {
+    padding: 20px;
+    text-align: center;
+    font-size: 1.2rem;
+}
+
+.error {
+    color: #f44336;
+}

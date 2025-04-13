@@ -17,7 +17,6 @@ Hệ thống microservices quản lý nhà hàng với FastAPI backend và React
 - Python 3.8+
 - Node.js 18+
 - MySQL hoặc SQL Server
-- Java Runtime Environment (JRE) cho Kafka
 
 ### Phương thức 1: Sử dụng Docker
 
