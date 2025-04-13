@@ -50,6 +50,7 @@ class OrderDetail(Base):
     unit_price = Column(Unicode(50), nullable=False)
     total_price = Column(Integer, nullable=False, default=0)
     note = Column(Unicode(255), nullable=True)
+    is_deleted = Column(Boolean, default=False) # Đánh dấu là đã xóa
 
     order = relationship("Order", back_populates="order_details") # checked
     # dish = relationship("Dish", back_populates="order_details")

@@ -1,5 +1,4 @@
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 
 from schemas import TableCreate, TableResponse, TableUpdate
@@ -10,7 +9,7 @@ from utils.logger import get_logger
 logger = get_logger(__name__)
 
 
-async def create_table(db: AsyncSession, table: TableCreate):
+def create_table(db: Session, table: TableCreate):
     try:
         db_table = Table(
             name=table.name,
@@ -20,13 +19,13 @@ async def create_table(db: AsyncSession, table: TableCreate):
         )
 
         db.add(db_table)
-        await db.commit()
-        await db.refresh(db_table)
+        db.commit()
+        db.refresh(db_table)
         logger.info(f"Created table: {db_table.name} (ID: {db_table.table_id})")
         
         return TableResponse.from_orm(db_table)
     except Exception as e:
-        await db.rollback()
+        db.rollback()
         logger.error(f"Unexpected error when creating table: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -34,11 +33,9 @@ async def create_table(db: AsyncSession, table: TableCreate):
         )
 
 
-async def get_table_by_id(db: AsyncSession, table_id: int):
+def get_table_by_id(db: Session, table_id: int):
     try:
-        query = select(Table).filter(Table.table_id == table_id)
-        result = await db.execute(query)
-        table = result.scalars().first()
+        table = db.query(Table).filter(Table.table_id == table_id).first()
         
         if not table:
             logger.warning(f"Table not found with ID: {table_id}")
@@ -55,11 +52,9 @@ async def get_table_by_id(db: AsyncSession, table_id: int):
         )
 
 
-async def get_all_tables(db: AsyncSession):
+def get_all_tables(db: Session):
     try:
-        query = select(Table)
-        result = await db.execute(query)
-        tables = result.scalars().all()
+        tables = db.query(Table).all()
         logger.info(f"Found {len(tables)} tables")
         return [TableResponse.from_orm(table) for table in tables]
     except Exception as e:
@@ -70,11 +65,9 @@ async def get_all_tables(db: AsyncSession):
         )
 
 
-async def update_table(db: AsyncSession, table_id: int, table: TableUpdate):
+def update_table(db: Session, table_id: int, table: TableUpdate):
     try:
-        query = select(Table).filter(Table.table_id == table_id)
-        result = await db.execute(query)
-        db_table = result.scalars().first()
+        db_table = db.query(Table).filter(Table.table_id == table_id).first()
         
         if not db_table:
             logger.warning(f"Table not found with ID: {table_id} to update")
@@ -86,13 +79,13 @@ async def update_table(db: AsyncSession, table_id: int, table: TableUpdate):
         try:
             for field, value in table.model_dump(exclude_unset=True).items():
                 setattr(db_table, field, value)
-            await db.commit()
-            await db.refresh(db_table)
+            db.commit()
+            db.refresh(db_table)
             logger.info(f"Updated table: {db_table.name} (ID: {table_id})")
             
             return TableResponse.from_orm(db_table)
         except IntegrityError as e:
-            await db.rollback()
+            db.rollback()
             logger.error(f"Integrity error when updating table: {str(e)}")
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -106,11 +99,9 @@ async def update_table(db: AsyncSession, table_id: int, table: TableUpdate):
         )
 
 
-async def delete_table(db: AsyncSession, table_id: int):
+def delete_table(db: Session, table_id: int):
     try:
-        query = select(Table).filter(Table.table_id == table_id)
-        result = await db.execute(query)
-        db_table = result.scalars().first()
+        db_table = db.query(Table).filter(Table.table_id == table_id).first()
         
         if not db_table:
             logger.warning(f"Table not found with ID: {table_id} to delete")
@@ -119,12 +110,12 @@ async def delete_table(db: AsyncSession, table_id: int):
             )
 
         table_name = db_table.name
-        await db.delete(db_table)
-        await db.commit()
+        db.delete(db_table)
+        db.commit()
         logger.info(f"Deleted table: {table_name} (ID: {table_id})")
         return TableResponse.from_orm(db_table)
     except Exception as e:
-        await db.rollback()
+        db.rollback()
         logger.error(f"Unexpected error when deleting table: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

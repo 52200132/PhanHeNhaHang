@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 from db.session import get_db
 from schemas import TableCreate, TableUpdate, TableResponse, ServiceResponseModel
 from crud import table_crud
@@ -10,9 +10,9 @@ router = APIRouter(prefix="/tables", tags=["tables"])
 logger = default_logger
 
 @router.post("/", response_model=ServiceResponseModel)
-async def create_table(table: TableCreate, db: AsyncSession = Depends(get_db)):
+def create_table(table: TableCreate, db: Session = Depends(get_db)):
     try:
-        created_table = await table_crud.create_table(db, table)
+        created_table = table_crud.create_table(db, table)
         return ServiceResponseModel(
             message="Create table successfully",
             success=True,
@@ -26,9 +26,9 @@ async def create_table(table: TableCreate, db: AsyncSession = Depends(get_db)):
         )
 
 @router.get("/{table_id}", response_model=ServiceResponseModel)
-async def get_table(table_id: int, db: AsyncSession = Depends(get_db)):
+def get_table(table_id: int, db: Session = Depends(get_db)):
     try:
-        table = await table_crud.get_table_by_id(db, table_id)
+        table = table_crud.get_table_by_id(db, table_id)
         return ServiceResponseModel(
             message="Get table successfully",
             success=True,
@@ -42,9 +42,9 @@ async def get_table(table_id: int, db: AsyncSession = Depends(get_db)):
         )
 
 @router.get("/")
-async def get_all_tables(db: AsyncSession = Depends(get_db)):
+def get_all_tables(db: Session = Depends(get_db)):
     try:
-        tables = await table_crud.get_all_tables(db)
+        tables = table_crud.get_all_tables(db)
         return {
             "message": "Get all tables successfully",
             "success": True,
@@ -58,9 +58,9 @@ async def get_all_tables(db: AsyncSession = Depends(get_db)):
         )
 
 @router.put("/{table_id}", response_model=ServiceResponseModel)
-async def update_table(table_id: int, table: TableUpdate, db: AsyncSession = Depends(get_db)):
+def update_table(table_id: int, table: TableUpdate, db: Session = Depends(get_db)):
     try:
-        updated_table = await table_crud.update_table(db, table_id, table)
+        updated_table = table_crud.update_table(db, table_id, table)
         return ServiceResponseModel(
             message="Update table successfully",
             success=True,
@@ -74,9 +74,9 @@ async def update_table(table_id: int, table: TableUpdate, db: AsyncSession = Dep
         )
 
 @router.delete("/{table_id}", response_model=ServiceResponseModel)
-async def delete_table(table_id: int, db: AsyncSession = Depends(get_db)):
+def delete_table(table_id: int, db: Session = Depends(get_db)):
     try:
-        result = await table_crud.delete_table(db, table_id)
+        result = table_crud.delete_table(db, table_id)
         return ServiceResponseModel(
             message="Delete table successfully",
             success=True,

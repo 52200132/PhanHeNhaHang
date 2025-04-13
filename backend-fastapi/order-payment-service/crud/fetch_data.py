@@ -1,16 +1,16 @@
-from httpx import AsyncClient
+from httpx import Client
 from config import MENU_SERVICE_URL
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
 
-async def get_dish_price(client: AsyncClient, dish_id: int) -> float:
+def get_dish_price(client: Client, dish_id: int) -> float:
     """
     Lấy giá của món ăn từ Menu Service.
     Trả về giá mặc định là 1 nếu không lấy được thông tin.
     """
     try:
-        response = await client.get(f"{MENU_SERVICE_URL}/dishes/{dish_id}")
+        response = client.get(f"{MENU_SERVICE_URL}/dishes/{dish_id}")
         if response.status_code == 200:
             dish_data = response.json()
             dish_price = dish_data.get("price", 1)

@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 from schemas import MakeOrder, ServiceResponseModel
 from schemas.orderdetail_schemas import OrderDetailCreate, OrderDetail
@@ -13,7 +13,7 @@ router = APIRouter(prefix="", tags=["orders"])
 
 
 @router.post("/orders")
-async def create_order(order: MakeOrder, db: AsyncSession = Depends(get_db)):
+def create_order(order: MakeOrder, db: Session = Depends(get_db)):
     """
     MakeOrder: {
         table_id: int,
@@ -37,7 +37,7 @@ async def create_order(order: MakeOrder, db: AsyncSession = Depends(get_db)):
     """
     try:
         # return(order)
-        create_order = await order_crud.create_order(db, order)
+        create_order = order_crud.create_order(db, order)
         return {
             "message": "Order created successfully",
             "success": True,
@@ -52,13 +52,13 @@ async def create_order(order: MakeOrder, db: AsyncSession = Depends(get_db)):
 
 
 @router.get("/orders/{order_id}")
-async def get_order_by_id(
+def get_order_by_id(
     order_id: int,
-    db: AsyncSession = Depends(get_db),
+    db: Session = Depends(get_db),
 ):
     try:
         # Lấy thông tin đơn hàng theo order_id
-        order = await order_crud.get_order_by_id(db, order_id)
+        order = order_crud.get_order_by_id(db, order_id)
         if not order:
             raise HTTPException(status_code=404, detail="Order not found")
         return {
@@ -73,15 +73,15 @@ async def get_order_by_id(
         )
 
 @router.post("/orders/add_orderdetail/{order_id}") 
-async def add_orderdetai_to_order(
+def add_orderdetai_to_order(
     order_id: int,
     order_detail: OrderDetail,
-    db: AsyncSession = Depends(get_db),
+    db: Session = Depends(get_db),
 ):
     try:
         # Thêm món ăn vào đơn hàng
         order_detail = OrderDetailCreate(**order_detail.dict())
-        add_dish = await order_crud.add_order_detail(db, order_id, order_detail)
+        add_dish = order_crud.add_order_detail(db, order_id, order_detail)
         return {
             "message": "Dish added to order successfully",
             "success": True,
@@ -95,13 +95,13 @@ async def add_orderdetai_to_order(
     
 
 @router.delete("/orders/delete_orderdetail/{order_detail_id}")
-async def delete_orderdetail_from_order(
+def delete_orderdetail_from_order(
     order_detail_id: int,
-    db: AsyncSession = Depends(get_db),
+    db: Session = Depends(get_db),
 ):
     try:
         # Xóa món ăn trong đơn hàng
-        order_detail = await order_crud.delete_order_detail(db, order_detail_id)
+        order_detail = order_crud.delete_order_detail(db, order_detail_id)
         return {
             "message": "OrderDetail deleted from order successfully",
             "success": True,

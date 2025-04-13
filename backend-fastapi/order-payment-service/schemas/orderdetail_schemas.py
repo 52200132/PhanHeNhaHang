@@ -43,7 +43,7 @@ class OrderDetailResponse(BaseModel):
     total_price: int
     unit_price: str = "VNĐ"
     note: str = ""
-    is_deleted: bool = False
+    is_deleted: bool
 
     class Config:
         from_attributes = True

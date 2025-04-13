@@ -1,5 +1,4 @@
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from fastapi import HTTPException, status
 from datetime import time
@@ -10,7 +9,7 @@ from utils.logger import default_logger
 
 logger = default_logger
 
-async def create_shift(db: AsyncSession, shift: ShiftCreate):
+def create_shift(db: Session, shift: ShiftCreate):
     try:
         # Validate shift times
         if shift.shift_end <= shift.shift_start:
@@ -28,12 +27,12 @@ async def create_shift(db: AsyncSession, shift: ShiftCreate):
         
         try:
             db.add(db_shift)
-            await db.commit()
-            await db.refresh(db_shift)
+            db.commit()
+            db.refresh(db_shift)
             logger.info(f"Created shift: {db_shift.name} (ID: {db_shift.shift_id})")
             return ShiftResponse.from_orm(db_shift)
         except IntegrityError as e:
-            await db.rollback()
+            db.rollback()
             logger.error(f"Integrity error when creating shift: {str(e)}")
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -48,11 +47,9 @@ async def create_shift(db: AsyncSession, shift: ShiftCreate):
             detail="Server error when creating shift"
         )
 
-async def get_shift_by_id(db: AsyncSession, shift_id: int):
+def get_shift_by_id(db: Session, shift_id: int):
     try:
-        query = select(Shift).filter(Shift.shift_id == shift_id)
-        result = await db.execute(query)
-        shift = result.scalars().first()
+        shift = db.query(Shift).filter(Shift.shift_id == shift_id).first()
         
         if not shift:
             logger.warning(f"Shift not found with ID: {shift_id}")
@@ -71,20 +68,16 @@ async def get_shift_by_id(db: AsyncSession, shift_id: int):
             detail="Server error when getting shift"
         )
 
-async def get_shift_by_time(db: AsyncSession, time: time):
+def get_shift_by_time(db: Session, time: time):
     try:
-        query = select(Shift).filter(
+        shift = db.query(Shift).filter(
             time > Shift.shift_start,
             time <= Shift.shift_end
-        )
-        result = await db.execute(query)
-        shift = result.scalars().first()
+        ).first()
         
         if not shift:
             logger.warning(f"No shift found for time: {time}")
-            query = select(Shift).order_by(Shift.shift_id.asc())
-            result = await db.execute(query)
-            shift = result.scalars().first()
+            shift = db.query(Shift).order_by(Shift.shift_id.asc()).first()
         logger.info(f"Found shift: {shift.name} for time: {time}")
         return ShiftResponse.from_orm(shift)
     except IntegrityError as e:
@@ -100,11 +93,9 @@ async def get_shift_by_time(db: AsyncSession, time: time):
             detail="Server error when getting shift"
         )
 
-async def get_all_shifts(db: AsyncSession):
+def get_all_shifts(db: Session):
     try:
-        query = select(Shift)
-        result = await db.execute(query)
-        shifts = result.scalars().all()
+        shifts = db.query(Shift).all()
         
         logger.info(f"Retrieved {len(shifts)} shifts")
         return [ShiftResponse.from_orm(shift) for shift in shifts]
@@ -115,11 +106,9 @@ async def get_all_shifts(db: AsyncSession):
             detail="Server error when getting all shifts"
         )
 
-async def update_shift(db: AsyncSession, shift_id: int, shift: ShiftUpdate):
+def update_shift(db: Session, shift_id: int, shift: ShiftUpdate):
     try:
-        query = select(Shift).filter(Shift.shift_id == shift_id)
-        result = await db.execute(query)
-        db_shift = result.scalars().first()
+        db_shift = db.query(Shift).filter(Shift.shift_id == shift_id).first()
         
         if not db_shift:
             logger.warning(f"Shift not found with ID: {shift_id} to update")
@@ -159,12 +148,12 @@ async def update_shift(db: AsyncSession, shift_id: int, shift: ShiftUpdate):
         try:
             for field, value in update_data.items():
                 setattr(db_shift, field, value)
-            await db.commit()
-            await db.refresh(db_shift)
+            db.commit()
+            db.refresh(db_shift)
             logger.info(f"Updated shift: {db_shift.name} (ID: {shift_id})")
             return ShiftResponse.from_orm(db_shift)
         except IntegrityError as e:
-            await db.rollback()
+            db.rollback()
             logger.error(f"Integrity error when updating shift: {str(e)}")
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -179,11 +168,9 @@ async def update_shift(db: AsyncSession, shift_id: int, shift: ShiftUpdate):
             detail="Server error when updating shift"
         )
 
-async def delete_shift(db: AsyncSession, shift_id: int):
+def delete_shift(db: Session, shift_id: int):
     try:
-        query = select(Shift).filter(Shift.shift_id == shift_id)
-        result = await db.execute(query)
-        db_shift = result.scalars().first()
+        db_shift = db.query(Shift).filter(Shift.shift_id == shift_id).first()
         
         if not db_shift:
             logger.warning(f"Shift not found with ID: {shift_id} to delete")
@@ -193,14 +180,14 @@ async def delete_shift(db: AsyncSession, shift_id: int):
             )
         
         shift_name = db_shift.name
-        await db.delete(db_shift)
-        await db.commit()
+        db.delete(db_shift)
+        db.commit()
         logger.info(f"Deleted shift: {shift_name} (ID: {shift_id})")
         return {"message": "Shift deleted successfully"}
     except HTTPException:
         raise
     except Exception as e:
-        await db.rollback()
+        db.rollback()
         logger.error(f"Unexpected error when deleting shift: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
