@@ -10,8 +10,8 @@ class KitchenOrder(Base):
     quantity = Column(Integer, nullable=False)
     note = Column(Unicode(255), nullable=True)
     create_at = Column(DateTime, nullable=False)
-    status = Column(Enum("Chưa chuẩn bị", "Đang chế biến", "Hoàn thành"), nullable=False, default="Chưa chuẩn bị")
+    status = Column(Enum("Chờ xác nhận", "Đang chế biến", "Hoàn thành"), nullable=False, default="Chờ xác nhận")
 
     __table_args__ = (
-        CheckConstraint("quantity > 0", name="check_quantity_positive")
+        CheckConstraint("quantity > 0", name="check_quantity_positive"),
     )
