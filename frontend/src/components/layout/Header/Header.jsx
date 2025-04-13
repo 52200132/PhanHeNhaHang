@@ -10,14 +10,17 @@ const Header = () => {
             </div>
             <nav className="app-header__nav">
                 <ul>
-                    <li>
+                    {/* <li>
                         <Link to="/menu">Menu</Link>
-                    </li>
+                    </li> */}
                     <li>
                         <Link to="/orders">Orders</Link>
                     </li>
                     <li>
                         <Link to="/kitchen">Kitchen</Link>
+                    </li>
+                    <li>
+                        <Link to="/guest-menu">Guest Menu</Link>
                     </li>
                 </ul>
             </nav>

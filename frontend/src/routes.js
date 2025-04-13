@@ -1,8 +1,10 @@
 import { createBrowserRouter } from 'react-router-dom';
 import App from './App';
-import MenuPage from './pages/MenuManagement/MenuPage';
+// import MenuPage from './pages/MenuManagement/MenuPage';
 import OrderPage from './pages/OrderSystem/OrderPage';
 import KitchenPage from './pages/KitchenDisplay/KitchenPage';
+import GuestMenu from './pages/Menu/GuestMenu';
+import HomePage from './pages/Home/HomePage';
 
 const router = createBrowserRouter([
   {
@@ -11,12 +13,12 @@ const router = createBrowserRouter([
     children: [
       {
         path: '/',
-        element: <OrderPage />
+        element: <HomePage />
       },
-      {
-        path: '/menu',
-        element: <MenuPage />
-      },
+      // {
+      //   path: '/menu',
+      //   element: <MenuPage />
+      // },
       {
         path: '/orders',
         element: <OrderPage />
@@ -24,6 +26,10 @@ const router = createBrowserRouter([
       {
         path: '/kitchen',
         element: <KitchenPage />
+      },
+      {
+        path: '/guest-menu',
+        element: <GuestMenu />
       }
     ]
   }
