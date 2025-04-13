@@ -20,7 +20,7 @@ app.add_middleware(
 async def startup():
     try:
         Base.metadata.create_all(bind=engine)
-        print("Database menu service connected and tables created.")
+        print("Database kitchen service connected and tables created.")
     except Exception as e:
         print(f"Database Error: {e}")
 

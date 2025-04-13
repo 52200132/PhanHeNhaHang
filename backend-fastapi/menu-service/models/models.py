@@ -57,3 +57,7 @@ class Recipe(Base):
 
     dish = relationship("Dish", back_populates="recipes") # checked
     ingredient = relationship("Ingredient", back_populates="recipes") # checked
+    
+    __table_args__ = (
+        CheckConstraint("base_amount >= 0", name="check_base_amount_positive"),
+    )

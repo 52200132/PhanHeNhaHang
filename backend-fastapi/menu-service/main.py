@@ -27,9 +27,10 @@ app.add_middleware(
 #         print(f"Database Error: {e}")
 
 # Include routers
-# app.include_router(dish_routes.router, prefix="/api/v1", tags=["dishes"])
+app.include_router(dish_routes.router, prefix="/api/v1", tags=["dishes"])
 app.include_router(category_routes.router, prefix="/api/v1", tags=["categories"])
-# app.include_router(ingredient_routes.router, prefix="/api/v1", tags=["ingredients"])
+app.include_router(ingredient_routes.router, prefix="/api/v1", tags=["ingredients"])
+app.include_router(recipe_routes.router, prefix="/api/v1", tags=["recipes"])
 
 @app.exception_handler(RequestValidationError)
 def validation_exception_handler(request: Request, exc: RequestValidationError):

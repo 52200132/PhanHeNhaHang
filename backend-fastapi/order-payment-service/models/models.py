@@ -23,7 +23,7 @@ class Order(Base):
     order_id = Column(Integer, primary_key=True, autoincrement=True, index=True)
     table_id = Column(Integer, ForeignKey("Table.table_id"), nullable=False)
     # user_id = Column(Integer, ForeignKey("users.user_id"), nullable=False)
-    total_price = Column(Integer, nullable=True)
+    total_price = Column(Integer, nullable=False, default=0)
     unit_price = Column(Unicode(50), nullable=False, default="VNĐ") # đơn vị tiền tệ
     checkIn_time = Column(DateTime, nullable=False)
     checkOut_time = Column(DateTime, nullable=False)
@@ -34,6 +34,10 @@ class Order(Base):
     # user = relationship("User", back_populates="orders")
     payment = relationship("Payment", back_populates="order") # checked
     order_details = relationship("OrderDetail", back_populates="order") # checked
+    
+    __table_args__ = (
+        CheckConstraint("price >= 0", name="check_price_positive"),  # Thêm dấu phẩy ở đây
+    )
 
 class OrderDetail(Base):
     __tablename__ = "OrderDetail"
@@ -44,7 +48,7 @@ class OrderDetail(Base):
     dish_id = Column(Integer, nullable=False)
     quantity = Column(Integer, nullable=False, default=1)
     unit_price = Column(Unicode(50), nullable=False)
-    total_price = Column(Integer, nullable=False)
+    total_price = Column(Integer, nullable=False, default=0)
     note = Column(Unicode(255), nullable=True)
 
     order = relationship("Order", back_populates="order_details") # checked
