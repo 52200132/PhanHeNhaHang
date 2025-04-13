@@ -10,10 +10,10 @@ load_dotenv()
 MAGENTA = "\033[35m"
 RESET = "\033[0m"
 
-DB_USERNAME = "root" # os.getenv("DB_USERNAME")
-DB_PASSWORD = "" # os.getenv("DB_PASSWORD")
-DB_SERVER = "localhost:3333"  # os.getenv("DB_SERVER")
-DB_NAME = "order_payment_service_db"# os.getenv("DB_NAME")
+DB_USERNAME = os.getenv("DB_USERNAME")
+DB_PASSWORD = os.getenv("DB_PASSWORD")
+DB_SERVER = os.getenv("DB_SERVER")
+DB_NAME = os.getenv("DB_NAME")
 
 # Cấu hình kết nối đồng bộ cho MySQL
 SQLALCHEMY_DATABASE_URL = f"mysql+pymysql://{DB_USERNAME}:{DB_PASSWORD}@{DB_SERVER}/{DB_NAME}"

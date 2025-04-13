@@ -19,7 +19,7 @@ redis>=4.5.5
 
 
 # More
-aioodbc>=0.4.0
+# aioodbc>=0.4.0
 
 # Testing
 # pytest>=7.3.1
