@@ -1,5 +1,5 @@
 from db import Base
-from sqlalchemy import Column, Unicode, Integer, ForeignKey, DateTime, Enum, Boolean, CheckConstraint
+from sqlalchemy import Column, Unicode, Integer, ForeignKey, DateTime, Enum, Boolean, CheckConstraint, Time
 from sqlalchemy.orm import relationship 
 
 class Table(Base):
@@ -60,8 +60,8 @@ class Shift(Base):
 
     shift_id = Column(Integer, primary_key=True, autoincrement=True, index=True)
     name = Column(Unicode(255), nullable=False)
-    shift_start = Column(DateTime, nullable=False)
-    shift_end = Column(DateTime, nullable=False)
+    shift_start = Column(Time, nullable=False)
+    shift_end = Column(Time, nullable=False)
 
     payments = relationship("Payment", back_populates="shift") # checked
 
