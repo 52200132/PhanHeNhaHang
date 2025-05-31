@@ -153,3 +153,28 @@ def delete_order_detail(db: Session, order_detail_id: int):
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+
+def update_order_status(db: Session, order_id: int, status: int):
+    """
+        Cập nhật trạng thái đơn hàng
+    """
+    try:
+        order = db.query(Order).filter(Order.order_id == order_id).first()
+        if not order:
+            logger.error(f"Order not found: {order_id}")
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Order not found")
+        
+        # Cập nhật trạng thái đơn hàng
+        order.status = "Hoàn thành"
+        db.commit()
+        db.refresh(order)
+
+        logger.info(f"Order status updated: {order.order_id}")
+        return OrderResonpense.from_orm(order)
+    except IntegrityError as e:
+        db.rollback()
+        logger.error(f"Integrity error when updating order status: {str(e)}")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Integrity error")
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))

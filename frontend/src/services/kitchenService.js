@@ -9,7 +9,7 @@ export const getKitchenOrders = async (statusFilter = '') => {
         if (statusFilter) {
             // Map frontend status to backend status
             const statusMap = {
-                'not_prepared': 'Chưa chuẩn bị',
+                'not_prepared': 'Chờ xác nhận',
                 'in_progress': 'Đang chế biến',
                 'completed': 'Hoàn thành'
             };

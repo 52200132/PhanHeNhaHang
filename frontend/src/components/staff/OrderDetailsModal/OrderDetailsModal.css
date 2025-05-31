@@ -1,0 +1,165 @@
+.order-details-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.order-details-modal {
+    background-color: white;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 700px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.order-details-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid #e0e0e0;
+    background-color: #f8f9fa;
+}
+
+.order-details-header h2 {
+    margin: 0;
+    font-size: 1.3rem;
+    color: #333;
+}
+
+.close-button {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+}
+
+.order-details-content {
+    padding: 20px;
+}
+
+.order-info {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.order-info p {
+    margin: 8px 0;
+}
+
+.order-items h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.items-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.items-table th, 
+.items-table td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+.items-table th {
+    font-weight: 600;
+    color: #555;
+    background-color: #f5f5f5;
+}
+
+.item-name {
+    width: 40%;
+}
+
+.item-quantity, .item-price {
+    width: 15%;
+    text-align: center;
+}
+
+.item-subtotal {
+    width: 20%;
+    text-align: right;
+    font-weight: 500;
+}
+
+.item-note {
+    font-size: 0.85rem;
+    color: #666;
+    margin-top: 5px;
+    font-style: italic;
+}
+
+.order-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 10px;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+}
+
+.total-amount {
+    color: #e53935;
+}
+
+.order-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+}
+
+.process-order-btn, .print-order-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.process-order-btn {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.process-order-btn:hover {
+    background-color: #3e8e41;
+}
+
+.print-order-btn {
+    background-color: #2196F3;
+    color: white;
+}
+
+.print-order-btn:hover {
+    background-color: #0b7dda;
+}
+
+@media (max-width: 768px) {
+    .order-details-modal {
+        width: 95%;
+    }
+    
+    .item-name, .item-quantity, .item-price, .item-subtotal {
+        width: auto;
+    }
+}

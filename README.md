@@ -16,46 +16,41 @@ Hệ thống microservices quản lý nhà hàng với FastAPI backend và React
 
 - Python 3.8+
 - Node.js 18+
-- MySQL hoặc SQL Server
+- MySQL
 
-### Phương thức 1: Sử dụng Docker
+### Cài đặt - Trên windows
 
-#### Bước 1: Chuẩn bị môi trường
+#### Backend
 
-1. Clone repository:
-   ```
-   git clone <repository-url>
-   cd PhanHeNhaHang
-   ```
+##### Bước 1: Cài các thư viện python
 
-2. Tạo và cấu hình file .env từ mẫu:
-   ```
-   cp .env.example .env
-   ```
+- Mở terminal tại thư mục chứ backend và frontend
 
-3. Chỉnh sửa file `.env` với các thông số phù hợp
-
-#### Bước 2: Khởi động services với Docker Compose
-
-```
-docker-compose up -d
-```
-
-Điều này sẽ khởi động:
-- MySQL/SQL Server database
-- Zookeeper
-- Kafka
-- Kafka UI (có thể truy cập tại http://localhost:8080)
-
-#### Bước 3: Cài đặt và chạy backend
-
-1. Cài đặt dependencies cho backend:
    ```
    cd backend-fastapi
    pip install -r requirements.txt
    ```
 
-2. Chạy các dịch vụ backend:
+##### Bước 2: Thiết lập biến môi trường
+
+- Tạo một file backend-fastapi/.env và cấu hình cho phù hợp trên thiết bị của bạn
+
+   ```
+   DB_USERNAME=root
+   DB_PASSWORD=
+   DB_SERVER=localhost:3333
+
+   DB_NAME_1=menu_service_db
+   DB_NAME_2=order_payment_service_db
+   DB_NAME_3=kitchent_service_db
+   ```
+
+##### Bước 3: Cài đặt MySQL
+
+- Tạo các cơ sở dữ liệu giống với `DB_NAME_1`, `DB_NAME_3`, `DB_NAME_2`
+
+##### Bước 4: Chạy các dịch vụ backend
+
    ```
    cd order-payment-service
    uvicorn main:app --reload --port 8001
@@ -69,72 +64,34 @@ docker-compose up -d
    uvicorn main:app --reload --port 8003
    ```
 
-#### Bước 4: Cài đặt và chạy frontend
+#### Frontend
 
-1. Cài đặt dependencies cho frontend:
+##### Bước 1: Thiết lập biến môi trường
+
+- Tạo file frontend/.env và cấu hình
+
    ```
+   REACT_APP_MENU_SERVICE_URL=http://localhost:8001/api/v1
+
+   REACT_APP_ORDER_SERVICE_URL=http://localhost:8002/api/v1
+
+   REACT_APP_KITCHEN_SERVICE_URL=http://localhost:8003/api/v1
+   ```
+
+##### Bước 2: Cài đặt các package và chạy front end
+
+- Mở terminal tại thư mục gốc
+
+   ```
+   # Cài đặt thư viện
    cd frontend
    npm install
-   ```
 
-2. Chạy frontend:
-   ```
+   # Chạy front end
    npm start
    ```
 
-Frontend sẽ chạy tại http://localhost:3000
-
-### Phương thức 2: Không sử dụng Docker
-
-#### Bước 1: Cài đặt MySQL
-
-1. Tải và cài đặt MySQL từ [trang chủ](https://dev.mysql.com/downloads/mysql/)
-2. Tạo cơ sở dữ liệu `restaurant_db`
-3. Tạo người dùng và cấp quyền cho cơ sở dữ liệu
-
-#### Bước 2: Cài đặt Kafka và Zookeeper
-
-Xem chi tiết trong [kafka-setup-guide.md](./kafka-setup-guide.md)
-
-#### Bước 3: Cấu hình môi trường
-
-1. Tạo file .env từ mẫu:
-   ```
-   cp .env.no-docker .env
-   ```
-2. Chỉnh sửa file `.env` với thông tin kết nối MySQL của bạn
-
-#### Bước 4: Chạy hệ thống
-
-##### Windows:
-```
-start-system.bat
-```
-
-##### Linux/Mac:
-```
-chmod +x start-system.sh
-./start-system.sh
-```
-
-Hoặc chạy từng thành phần theo thứ tự:
-1. Zookeeper
-2. Kafka
-3. Backend services (order-payment, menu, kitchen)
-4. Frontend
-
-## Sử dụng Kafka
-
-Hệ thống sử dụng Kafka để giao tiếp giữa các microservices:
-
-- `order.created`: Khi đơn hàng được tạo
-- `order.updated`: Khi đơn hàng được cập nhật
-- `order.status_changed`: Khi trạng thái đơn hàng thay đổi
-- `payment.processed`: Khi thanh toán được xử lý
-- `dish.availability`: Thay đổi tình trạng sẵn có của món ăn
-- `table.status`: Thay đổi trạng thái bàn
-
-## Truy cập các dịch vụ
+#### Truy cập các dịch vụ
 
 - Order-Payment Service: http://localhost:8001
 - Menu Service: http://localhost:8002

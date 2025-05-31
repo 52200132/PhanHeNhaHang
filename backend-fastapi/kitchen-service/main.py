@@ -1,8 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from db import engine, Base
-from models import KitchenOrder
 from api.v1.endpoints import kitchen_order_routes
+from utils.logger import get_logger
+
+# Create logger for this module
+logger = get_logger(__name__)
 
 app = FastAPI(title="Kitchen Service API")
 
@@ -14,15 +16,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# Create tables on startup
-@app.on_event("startup")
-async def startup():
-    try:
-        Base.metadata.create_all(bind=engine)
-        print("Database kitchen service connected and tables created.")
-    except Exception as e:
-        print(f"Database Error: {e}")
 
 # Include routers
 app.include_router(kitchen_order_routes.router, prefix="/api/v1", tags=["kitchen_orders"])

@@ -6,6 +6,7 @@ from models.models import OrderDetail
 from utils.logger import get_logger
 from httpx import Client
 from crud.fetch_data import get_dish_price
+from crud import call_service_api
 
 logger = get_logger(__name__)
 
@@ -34,6 +35,13 @@ def create_list_order_detail(db: Session, order_detail_items: list[OrderDetailCr
         # Cập nhật lại thông tin cho từng order_detail
         for order_detail in order_detail_list:
             db.refresh(order_detail)
+            # Gọi API để tạo đơn hàng trong bếp
+            call_service_api.call_create_kitchen_order_api(
+                order_id=order_detail.order_id,
+                dish_id=order_detail.dish_id,
+                note=order_detail.note,
+                quantity=order_detail.quantity
+            )
         logger.info(f"Order details created successfully for order_id: {order_detail_items[0].order_id if order_detail_items else 'unknown'}")
         return [OrderDetailResponse.from_orm(orderdetail) for orderdetail in order_detail_list]
     except Exception as e:

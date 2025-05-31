@@ -12,6 +12,7 @@ const KitchenPage = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [activeTab, setActiveTab] = useState("not_prepared");
+    const [sortBy, setSortBy] = useState("time"); // 'time' or 'priority'
 
     useEffect(() => {
         const fetchOrders = async () => {
@@ -28,8 +29,8 @@ const KitchenPage = () => {
         };
 
         fetchOrders();
-        // Set up polling
-        const intervalId = setInterval(fetchOrders, 30000);
+        // Set up polling with more frequent updates for active orders
+        const intervalId = setInterval(fetchOrders, activeTab === "in_progress" ? 15000 : 30000);
 
         return () => clearInterval(intervalId);
     }, [activeTab]);
@@ -67,32 +68,79 @@ const KitchenPage = () => {
                             handleUpdateStatus(order.kitchen_order_id, "Đang chế biến")
                         }
                     >
-                        Start Preparing
+                        Bắt đầu chế biến
                     </Button>
                 );
             case "Đang chế biến":
                 return (
                     <Button
-                        variant="primary"
+                        variant="success"
                         onClick={() =>
                             handleUpdateStatus(order.kitchen_order_id, "Hoàn thành")
                         }
                     >
-                        Mark as Complete
+                        Hoàn thành
                     </Button>
+                );
+            case "Hoàn thành":
+                return (
+                    <div className="completed-time">
+                        Hoàn thành lúc: {new Date(order.updated_at || Date.now()).toLocaleTimeString()}
+                    </div>
                 );
             default:
                 return null;
         }
     };
 
-    if (loading) return <div className="loading">Loading kitchen orders...</div>;
+    const getStatusBadge = (status) => {
+        let badgeClass = "status-badge";
+        
+        switch (status) {
+            case "Chưa chuẩn bị":
+                badgeClass += " status-new";
+                break;
+            case "Đang chế biến":
+                badgeClass += " status-progress";
+                break;
+            case "Hoàn thành":
+                badgeClass += " status-completed";
+                break;
+            default:
+                break;
+        }
+        
+        return <span className={badgeClass}>{status}</span>;
+    };
+
+    const getTimeSince = (dateString) => {
+        const created = new Date(dateString);
+        const now = new Date();
+        const diffMinutes = Math.floor((now - created) / (1000 * 60));
+        
+        if (diffMinutes < 1) return "Vừa xong";
+        if (diffMinutes < 60) return `${diffMinutes} phút trước`;
+        return `${Math.floor(diffMinutes / 60)} giờ ${diffMinutes % 60} phút trước`;
+    };
+
+    const sortOrders = (ordersToSort) => {
+        if (sortBy === "time") {
+            return [...ordersToSort].sort((a, b) => new Date(a.create_at) - new Date(b.create_at));
+        } else if (sortBy === "priority") {
+            return [...ordersToSort].sort((a, b) => (b.priority || 0) - (a.priority || 0));
+        }
+        return ordersToSort;
+    };
+
+    if (loading) return <div className="loading">Đang tải danh sách món ăn...</div>;
     if (error) return <div className="error">{error}</div>;
+
+    const sortedOrders = sortOrders(orders);
 
     return (
         <div className="kitchen-page">
             <div className="kitchen-page__header">
-                <h2>Kitchen Display</h2>
+                <h2>Hệ thống hiển thị bếp</h2>
             </div>
 
             <div className="kitchen-page__tabs">
@@ -100,49 +148,75 @@ const KitchenPage = () => {
                     className={activeTab === "not_prepared" ? "active" : ""}
                     onClick={() => setActiveTab("not_prepared")}
                 >
-                    Not Prepared
+                    Chưa chuẩn bị
                 </button>
                 <button
                     className={activeTab === "in_progress" ? "active" : ""}
                     onClick={() => setActiveTab("in_progress")}
                 >
-                    In Progress
+                    Đang chế biến
                 </button>
                 <button
                     className={activeTab === "completed" ? "active" : ""}
                     onClick={() => setActiveTab("completed")}
                 >
-                    Completed
+                    Hoàn thành
+                </button>
+            </div>
+
+            <div className="kitchen-page__sort">
+                <span>Sắp xếp theo: </span>
+                <button 
+                    className={sortBy === "time" ? "active" : ""} 
+                    onClick={() => setSortBy("time")}
+                >
+                    Thời gian
+                </button>
+                <button 
+                    className={sortBy === "priority" ? "active" : ""} 
+                    onClick={() => setSortBy("priority")}
+                >
+                    Ưu tiên
                 </button>
             </div>
 
             <div className="kitchen-page__orders">
-                {orders.length === 0 ? (
-                    <p className="no-orders">No orders in this category</p>
+                {sortedOrders.length === 0 ? (
+                    <p className="no-orders">Không có món ăn nào trong danh mục này</p>
                 ) : (
-                    orders.map((order) => (
+                    sortedOrders.map((order) => (
                         <Card
                             key={order.kitchen_order_id}
-                            title={`Order #${order.order_id}`}
-                            subtitle={`Dish ID: ${order.dish_id}`}
-                            className="order-card"
+                            title={`Đơn #${order.order_id}`}
+                            subtitle={`${order.dish_name || `Món #${order.dish_id}`}`}
+                            className={`order-card ${order.status === "Đang chế biến" ? "in-progress" : ""}`}
                         >
                             <div className="order-card__details">
-                                <div>
-                                    <strong>Quantity:</strong> {order.quantity}
+                                <div className="order-header">
+                                    <div className="order-quantity">
+                                        <strong>Số lượng:</strong> {order.quantity}
+                                    </div>
+                                    <div className="order-status">
+                                        {getStatusBadge(order.status)}
+                                    </div>
                                 </div>
-                                <div>
-                                    <strong>Status:</strong> {order.status}
-                                </div>
+                                
                                 {order.note && (
-                                    <div>
-                                        <strong>Note:</strong> {order.note}
+                                    <div className="order-note">
+                                        <strong>Ghi chú:</strong> {order.note}
                                     </div>
                                 )}
-                                <div>
-                                    <strong>Created:</strong>{" "}
-                                    {new Date(order.create_at).toLocaleString()}
+                                
+                                <div className="order-time">
+                                    <div><strong>Đã tạo:</strong> {getTimeSince(order.create_at)}</div>
+                                    <div className="time-exact">({new Date(order.create_at).toLocaleString()})</div>
                                 </div>
+                                
+                                {order.status === "Đang chế biến" && (
+                                    <div className="preparation-time">
+                                        <strong>Thời gian chuẩn bị:</strong> {getTimeSince(order.updated_at || order.create_at)}
+                                    </div>
+                                )}
                             </div>
                             <div className="order-card__actions">
                                 {getActionButtons(order)}

@@ -12,6 +12,6 @@ class KitchenOrder(Base):
     create_at = Column(DateTime, nullable=False)
     status = Column(Enum("Chờ xác nhận", "Đang chế biến", "Hoàn thành"), nullable=False, default="Chờ xác nhận")
 
-    __table_args__ = (
-        CheckConstraint("quantity > 0", name="check_quantity_positive"),
-    )
+    # __table_args__ = (
+    #     CheckConstraint("quantity > 0", name="check_quantity_positive"),
+    # )

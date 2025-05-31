@@ -130,3 +130,23 @@ def delete_orderdetail_from_order(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
         )
+
+@router.patch("/orders/{order_id}")
+def update_order_status(
+    order_id: int,
+    status: str = "Hoàn thành",
+    db: Session = Depends(get_db),
+):
+    try:
+        # Cập nhật trạng thái đơn hàng
+        order = order_crud.update_order_status(db, order_id, status)
+        return {
+            "message": "Order status updated successfully",
+            "success": True,
+            "data": order,
+        }
+    except Exception as e:
+        logger.error(f"Error updating order status: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+        )

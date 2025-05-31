@@ -102,7 +102,7 @@ const GuestMenu = () => {
             note: notes[item.id] || ''
         }));
 
-        // TODO: Submit the order to the backend
+        // Prepare order object
         const order = {
             table_id: table.table_id,
             items: orderData,
@@ -113,6 +113,26 @@ const GuestMenu = () => {
                 console.log('Order response:', response);
                 if (response.status === 200) {
                     alert('Đặt món thành công!');
+                    
+                    // Send notification to StaffPage about the new order
+                    const orderNotification = {
+                        type: 'NEW_ORDER',
+                        tableId: table.table_id,
+                        tableName: table.name,
+                        orderId: response.data['data'].order_id || Date.now(),
+                        items: orderedItems.map(item => ({
+                            name: item.name,
+                            quantity: item.quantity,
+                            note: notes[item.id] || ''
+                        })),
+                        timestamp: new Date().toISOString()
+                    };
+                    
+                    // Send notification via localStorage event system
+                    localStorage.setItem('latestOrderNotification', JSON.stringify(orderNotification));
+                    // Dispatch event to notify other components
+                    window.dispatchEvent(new Event('orderPlaced'));
+                    
                     // Clear the order after submission
                     setOrderedItems([]);
                     setNotes({});
@@ -120,8 +140,6 @@ const GuestMenu = () => {
                     alert('Đặt món thất bại! Vui lòng thử lại.');
                 }
             });
-        // console.log('Submitting order:', order);
-        // Here you would implement the API call to submit the order
     };
 
     const getTotalAmount = () => {

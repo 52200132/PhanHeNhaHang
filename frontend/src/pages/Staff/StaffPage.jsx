@@ -3,6 +3,7 @@ import './StaffPage.css';
 import TableCard from '../../components/staff/TableCard/TableCard';
 import SearchBar from '../../components/common/SearchBar';
 import QRCodeModal from '../../components/common/QRCodeModal/QRCodeModal';
+import OrderDetailsModal from '../../components/staff/OrderDetailsModal/OrderDetailsModal';
 import { tableService } from '../../services/orderService';
 
 const StaffPage = () => {
@@ -13,9 +14,70 @@ const StaffPage = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [showQRModal, setShowQRModal] = useState(false);
     const [selectedTable, setSelectedTable] = useState(null);
+    const [orderNotifications, setOrderNotifications] = useState([]);
+    const [showNotification, setShowNotification] = useState(false);
+    const [showOrderDetails, setShowOrderDetails] = useState(false);
+    const [selectedOrder, setSelectedOrder] = useState(null);
 
     useEffect(() => {
         fetchTables();
+        
+        // Setup event listener for new orders
+        const handleOrderPlaced = () => {
+            const notification = JSON.parse(localStorage.getItem('latestOrderNotification'));
+            if (notification) {
+                // Add the new notification to the list
+                setOrderNotifications(prevNotifications => [notification, ...prevNotifications]);
+                // Show the notification
+                setShowNotification(true);
+                
+                // Update table status to "Đang phục vụ" if it was "Trống"
+                setTables(prevTables => 
+                    prevTables.map(table => {
+                        if (table.id === notification.tableId && table.status === 'Trống') {
+                            return { ...table, status: 'Đang phục vụ' };
+                        }
+                        return table;
+                    })
+                );
+                
+                // Auto-hide notification after 5 seconds
+                setTimeout(() => {
+                    setShowNotification(false);
+                }, 2000);
+            }
+        };
+        
+        window.addEventListener('orderPlaced', handleOrderPlaced);
+        
+        // Check if there are any pending notifications
+        const checkPendingNotifications = () => {
+            const notification = JSON.parse(localStorage.getItem('latestOrderNotification'));
+            if (notification) {
+                setOrderNotifications(prevNotifications => {
+                    // Check if this notification is already in the list
+                    const exists = prevNotifications.some(n => 
+                        n.orderId === notification.orderId && 
+                        n.timestamp === notification.timestamp
+                    );
+                    
+                    if (!exists) {
+                        setShowNotification(true);
+                        setTimeout(() => {
+                            setShowNotification(false);
+                        }, 5000);
+                        return [notification, ...prevNotifications];
+                    }
+                    return prevNotifications;
+                });
+            }
+        };
+        
+        checkPendingNotifications();
+        
+        return () => {
+            window.removeEventListener('orderPlaced', handleOrderPlaced);
+        };
     }, []);
 
     const fetchTables = async () => {
@@ -59,12 +121,23 @@ const StaffPage = () => {
         if (table) {
             setSelectedTable(table);
             
-            // Chỉ hiện QR code khi bàn đang trống
+            // Check if table is available or busy
             if (table.status === 'Trống') {
                 setShowQRModal(true);
             } else {
-                console.log(`Đã chọn bàn có ID: ${tableId} - Đang phục vụ`);
-                // Xử lý khác nếu bàn đang phục vụ
+                // For busy tables, find the latest order for this table
+                const tableOrders = orderNotifications.filter(
+                    order => order.tableId === tableId
+                );
+                
+                if (tableOrders.length > 0) {
+                    // Show the most recent order
+                    setSelectedOrder(tableOrders[0]);
+                    setShowOrderDetails(true);
+                } else {
+                    console.log(`Đã chọn bàn có ID: ${tableId} - Đang phục vụ, nhưng không có đơn hàng`);
+                    alert("Bàn đang phục vụ, nhưng không tìm thấy thông tin đơn hàng.");
+                }
             }
         }
     };
@@ -118,6 +191,33 @@ const StaffPage = () => {
         return statusMatch && searchMatch;
     });
 
+    // Handle closing the notification
+    const handleCloseNotification = () => {
+        setShowNotification(false);
+    };
+
+    // Handle clicking on a notification to view details
+    const handleNotificationClick = (tableId) => {
+        const table = tables.find(t => t.id === tableId);
+        if (table) {
+            setSelectedTable(table);
+            
+            // Find the order notification for this table
+            const order = orderNotifications.find(notification => notification.tableId === tableId);
+            
+            if (order) {
+                setSelectedOrder(order);
+                setShowOrderDetails(true);
+                setShowNotification(false); // Close notification popup
+            }
+        }
+    };
+    
+    // Close order details modal
+    const handleCloseOrderDetails = () => {
+        setShowOrderDetails(false);
+    };
+
     if (loading) return <div className="loading">Đang tải dữ liệu bàn...</div>;
     if (error) return <div className="error">{error}</div>;
 
@@ -127,9 +227,43 @@ const StaffPage = () => {
                 <h2>Danh sách bàn</h2>
             </div>
 
+            {/* Order notification popup */}
+            {showNotification && orderNotifications.length > 0 && (
+                <div className="order-notification">
+                    <div className="notification-header">
+                        <h3>Đơn hàng mới!</h3>
+                        <button onClick={handleCloseNotification} className="close-btn">×</button>
+                    </div>
+                    <div className="notification-content">
+                        <p><strong>Bàn:</strong> {orderNotifications[0].tableName}</p>
+                        <p><strong>Thời gian:</strong> {new Date(orderNotifications[0].timestamp).toLocaleTimeString()}</p>
+                        <div className="notification-items">
+                            <strong>Món đặt:</strong>
+                            <ul>
+                                {orderNotifications[0].items.map((item, index) => (
+                                    <li key={index}>
+                                        {item.quantity}x {item.name}
+                                        {item.note && <span className="item-note"> (Ghi chú: {item.note})</span>}
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                        <button 
+                            className="view-order-btn"
+                            onClick={() => handleNotificationClick(orderNotifications[0].tableId)}
+                        >
+                            Xem chi tiết
+                        </button>
+                    </div>
+                </div>
+            )}
+
             <div className="staff-page__top-bar">
                 <div className="staff-page__staff-info">
                     Nhân viên: Nguyễn Văn A
+                    {orderNotifications.length > 0 && (
+                        <span className="notification-badge">{orderNotifications.length}</span>
+                    )}
                 </div>
                 <div className="search-bar-container">
                     <SearchBar
@@ -221,6 +355,15 @@ const StaffPage = () => {
                     tableName={selectedTable.name}
                     onClose={() => setShowQRModal(false)}
                     onConfirm={handleConfirmService}
+                />
+            )}
+
+            {/* Order Details Modal */}
+            {showOrderDetails && selectedOrder && selectedTable && (
+                <OrderDetailsModal
+                    order={selectedOrder}
+                    tableName={selectedTable.name}
+                    onClose={handleCloseOrderDetails}
                 />
             )}
         </div>

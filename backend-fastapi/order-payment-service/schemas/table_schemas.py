@@ -2,6 +2,8 @@ from pydantic import BaseModel
 from typing import Optional, Annotated
 from pydantic import Field
 from pydantic import field_validator
+from enum import Enum
+
 from utils.logger import default_logger
 
 logger = default_logger
@@ -30,10 +32,12 @@ class TableUpdate(BaseModel):
     name: Optional[str] = None
     is_available: Optional[bool] = None
     table_type: Optional[str] = None
-    capacity: int
+    capacity: Optional[int] = None
 
     @field_validator("capacity")
     def validate_capacity(cls, v):
+        if v is None:
+            return v
         if v < 2:
             raise ValueError("Invalid capacity, must be greater than 2")
         return v
@@ -50,3 +54,7 @@ class TableResponse(BaseModel):
         # orm_mode = True
         from_attributes = True
 
+
+class TableStatus(str, Enum):
+    trong = "Trống"
+    dang_phuc_vu = "Đang phục vụ"
